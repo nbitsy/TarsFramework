@@ -32,8 +32,10 @@ do_configure_and_build() {
     mkdir -p "$BUILD_DIR"
     cmake -S "$ROOT" -B "$BUILD_DIR" \
         -DCMAKE_INSTALL_PREFIX="$install_path"
-    local jobs
-    jobs="$(nproc 2>/dev/null || echo 4)"
+    local jobs total_cores
+    total_cores="$(nproc 2>/dev/null || echo 4)"
+    jobs="$((total_cores / 2))"
+    (( jobs < 1 )) && jobs=1
     cmake --build "$BUILD_DIR" -- -j"${jobs}" "$@"
 }
 
